@@ -1,0 +1,43 @@
+# Node.js
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+
+# Elasticsearch data
+.elasticsearch/
+
+# IDE or editor-specific files
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# Build output
+dist/
+build/
+
+# Dependency directories
+bower_components/
+
+# Coverage output
+coverage/
+
+# Package manager files
+package-lock.json
+yarn.lock
+
+# Ignore personal or local config files
+*.iml
