@@ -6,10 +6,12 @@ import dotenv from 'dotenv';
 // import ConnectDB from "./config/db.js";
 
 dotenv.config();
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
 import getAllDocs from "./ElasticRoute/ElasticRoute.js";
+import characters from "./ElasticRoute/ElasticRoute.js"
 import { uploadToElasticController } from "./Controllers/Controller.js";
 const corsOptions = {
-  origin: ["http://localhost:3000","http://localhost:4200"],
+  origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "DELETE","PATCH"], 
   allowedHeaders: ["Content-Type", "Authorization"], 
   credentials: true, 
@@ -18,16 +20,16 @@ const corsOptions = {
 
 // Create an Elasticsearch client
 export const client = new Client({
-  node: "http://localhost:9200",
+  node: process.env.ELASTICSEARCH_NODE,
   auth: {
     username: process.env.ELASTICSEARCH_USERNAME,
     password: process.env.ELASTICSEARCH_PASSWORD,
-    // username:"djfbvhjdsgv",
-    // password:"sdjvbjksv"
   },
 });
-const PORT =  9000;
-const app = express();
+const PORT =  process.env.PORT;
+export const app = express();
+app.use("/public", express.static("public"));
+
 // Test connection
 (async () => {
   try {
@@ -43,7 +45,8 @@ app.get("/", (req, res) => {
 
   });
 });
-// uploadToElasticController();
+// await uploadToElasticController();
+uploadToElasticController();
 cron.schedule('0 0 * * *', async () => {
   console.log('Running scheduled task...');
 
@@ -74,4 +77,4 @@ app.listen(PORT, () => {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/api", getAllDocs);
-
+app.use("/api",characters)

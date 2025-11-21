@@ -1,12 +1,15 @@
 import { getAllPokeDocService } from "../ElasticQueryService/GetAllPokeDoc.js";
 import { getPaginatedDocService } from "../ElasticQueryService/PaginatePokeDoc.js";
 import { filterService } from "../ElasticQueryService/filterService.js";
+import { getEEData } from "../ElasticQueryService/getEEDatabyId.js";
 
 export const getAllPokemonDocController = (req, res) => {
   getAllPokeDocService(req, res);
 };
 
-
+export const getEasterEggDocController=(req,res)=>{
+    getEEData(req,res);
+}
 export const getPaginatedDocController=(req,res)=>{
     getPaginatedDocService(req,res);
 }

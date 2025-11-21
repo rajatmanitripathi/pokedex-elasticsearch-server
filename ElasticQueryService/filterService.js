@@ -5,6 +5,7 @@ export const filterService = async (req, res) => {
   const param = req.query.inputValue;
   const docsPerPage = req.query.docsPerPage;
   const userId = req.query.uuidForThisPort;
+  const exactMatch=req.query.exactMatch
   try {
     const newTypedObject = {
       searchedField: param,
@@ -22,8 +23,16 @@ export const filterService = async (req, res) => {
     const sourceParameter = index === "searchhistory" ? "history" : "name";
 
     const queryBody = {
-      query: trimmedParam
+    query: trimmedParam
+      ? exactMatch
         ? {
+            term: {
+              name: {
+                value: trimmedParam,
+              },
+            },
+          }
+        : {
             bool: {
               should: [
                 {
@@ -36,13 +45,13 @@ export const filterService = async (req, res) => {
                 },
                 {
                   wildcard: {
-                    name: `${trimmedParam}*`,
+                    name: `${trimmedParam.toLowerCase()}*`,
                   },
                 },
                 {
                   prefix: {
                     name: {
-                      value: trimmedParam,
+                      value: trimmedParam.toLowerCase(),
                     },
                   },
                 },
@@ -50,17 +59,22 @@ export const filterService = async (req, res) => {
               minimum_should_match: 1,
             },
           }
-        : {
-            match: {
-              userId: { query: userId },
+      : {
+          match: {
+            userId: {
+              query: userId,
             },
           },
-      _source: [sourceParameter],
-    };
+        },
+    // _source: sourceParameter,
+  };
     // const deleteQuery={
     //   index: 'searchhistory',
     //   id: docId,
     // }
+    if (!exactMatch) {
+  body._source = sourceParameter;
+}
     let finalResult = {};
     let theFinalResultArr = [];
     const response = await client.search({
