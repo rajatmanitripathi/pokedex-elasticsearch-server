@@ -3,7 +3,6 @@ import express from "express";
 import cron from 'node-cron';
 import cors from "cors";
 import dotenv from 'dotenv';
-// import ConnectDB from "./config/db.js";
 
 dotenv.config();
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
@@ -46,28 +45,31 @@ app.get("/", (req, res) => {
   });
 });
 // await uploadToElasticController();
-uploadToElasticController();
+// uploadToElasticController();
 cron.schedule('0 0 * * *', async () => {
   console.log('Running scheduled task...');
-
-  // Clear Elasticsearch data (you can adjust this based on how you're doing it)
   try {
-    await client.indices.delete({ index: 'pokedex' }); // This deletes the current index
+    await client.indices.delete({ index: 'pokedex' });
     console.log('Elasticsearch index "pokedex" cleared!');
   } catch (error) {
     console.error('Error clearing Elasticsearch index:', error);
   }
-
-  // Push new bulk data (this is where you get new Pokémon data)
   try {
-    await uploadToElasticController(); // This will fetch data and insert it into Elasticsearch
-    console.log('New Pokémon data has been uploaded!');
+    await uploadToElasticController(0, 500, 10);
+
+    await uploadToElasticController(501, 1000, 10);
+
+    await uploadToElasticController(1001, 1300, 10);
+
+    await uploadToElasticController(1301, 1329, 14);
+
+    console.log("🎉 All Pokémon uploaded successfully!");
   } catch (error) {
     console.error('Error updating Pokémon data:', error);
   }
 }, {
   scheduled: true,
-  timezone: "Asia/Kolkata", // Set to India Standard Time (IST)
+  timezone: "Asia/Kolkata",
 });
 // ConnectDB();
 app.listen(PORT, () => {
